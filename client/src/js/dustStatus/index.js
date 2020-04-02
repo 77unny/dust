@@ -36,7 +36,7 @@ const saveStartingPoint = e => (dustOption.scrollStartingPoint = e.touches[0].cl
 
 const calcIndexTouchMove = (e, dataLength) => {
   dustOption.scrollEndPoint = e.touches[0].clientY;
-  const direction = parseInt((dustOption.scrollStartingPoint - dustOption.scrollEndPoint) / 10);
+  const direction = parseInt((dustOption.scrollStartingPoint - dustOption.scrollEndPoint) / 50);
   if (direction > dustOption.prevDirection) {
     ++dustOption.index;
     dustOption.index >= dataLength ? (dustOption.index = dataLength) : dustOption.index;
@@ -53,7 +53,7 @@ const updateDustTimelineView = list => DUST_ELEMENT.timeline.insertAdjacentHTML(
 const updateDustStatusView = (curretDust = 0) => {
   const { dataTime, pm10Grade, pm10Value } = DUST_TIMELINE[curretDust];
   const gradeClassList = Object.values(DUST_GRADE.STATUS_CLASS);
-  
+
   DUST_ELEMENT.station.innerHTML = DUST_STATION;
   DUST_ELEMENT.time.innerHTML = dataTime;
   DUST_ELEMENT.value.innerHTML = pm10Value;
