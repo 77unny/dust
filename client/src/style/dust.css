@@ -379,7 +379,8 @@
 
 #forecast .slider {
   -webkit-appearance: none;
-  width: 100%;
+  width: 50%;
+  margin: 0 auto;
   height: 15px;
   border-radius: 5px;
   background: #d3d3d3;
