@@ -36,7 +36,7 @@ const saveStartingPoint = e => (dustOption.scrollStartingPoint = e.touches[0].cl
 
 const calcIndexTouchMove = (e, dataLength) => {
   dustOption.scrollEndPoint = e.touches[0].clientY;
-  const direction = parseInt((dustOption.scrollStartingPoint - dustOption.scrollEndPoint) / 50);
+  const direction = parseInt((dustOption.scrollStartingPoint - dustOption.scrollEndPoint) / 100);
   if (direction > dustOption.prevDirection) {
     ++dustOption.index;
     dustOption.index >= dataLength ? (dustOption.index = dataLength) : dustOption.index;
