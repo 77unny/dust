@@ -126,10 +126,12 @@
       height:100%;
     }
   }
+  .controller {
+    text-align: center;
+  }
   .slider {
     -webkit-appearance: none;
     width: 50%;
-    margin: 0 auto;
     height: 15px;
     border-radius: 5px;
     background: #d3d3d3;
