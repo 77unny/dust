@@ -1,18 +1,11 @@
-import { DUST_GRADE } from '../../constant/constant.js';
-import { $SELETOR, $SELETOR_ALL } from '../../util/index.js';
+import { DUST_API_URL, DUST_GRADE } from '../../constant/constant.js';
+import { $SELETOR, $GET } from '../../util/index.js';
 
-let DUST_STATION = null;
-let DUST_TIMELINE = null;
-let DUST_TIMELINE_LENGTH = null;
-
-const init = () => {
-  const dustData = localStorage.getItem('DUST_STATUS');
-  const dustDataParse = JSON.parse(dustData);
-
-  DUST_STATION = dustDataParse.location.stationName;
-  DUST_TIMELINE = dustDataParse.content;
-  DUST_TIMELINE_LENGTH = DUST_TIMELINE.length - 1;
-};
+const DUST_DATA = {
+  station: null,
+  timeline: null,
+  timelineLength: null
+}
 
 const DUST_ELEMENT = {
   wrap: $SELETOR('#dust'),
@@ -50,10 +43,10 @@ const calcIndexTouchMove = (e, dataLength) => {
 const updateDustTimelineView = list => DUST_ELEMENT.timeline.insertAdjacentHTML('beforeend', list);
 
 const updateDustStatusView = (curretDust = 0) => {
-  const { dataTime, pm10Grade, pm10Value } = DUST_TIMELINE[curretDust];
+  const { dataTime, pm10Grade, pm10Value } = DUST_DATA.timeline[curretDust];
   const gradeClassList = Object.values(DUST_GRADE.STATUS_CLASS);
 
-  DUST_ELEMENT.station.innerHTML = DUST_STATION;
+  DUST_ELEMENT.station.innerHTML = DUST_DATA.station;
   DUST_ELEMENT.time.innerHTML = dataTime;
   DUST_ELEMENT.value.innerHTML = pm10Value;
   DUST_ELEMENT.wrap.classList.remove(...gradeClassList);
@@ -63,9 +56,15 @@ const updateDustStatusView = (curretDust = 0) => {
   return;
 };
 
-const dustStatusInit = () => {
-  init();
-  const timelineList = DUST_TIMELINE.reduce((list, item) => {
+const initRender = () => {
+  const dustData = localStorage.getItem('DUST_STATUS');
+  const dustDataParse = JSON.parse(dustData);
+
+  DUST_DATA.station = dustDataParse.location.stationName;
+  DUST_DATA.timeline = dustDataParse.content;
+  DUST_DATA.timelineLength = DUST_DATA.timeline.length - 1;
+
+  const timelineList = DUST_DATA.timeline.reduce((list, item) => {
     const dustGrade = item.pm10Grade;
     const dustValue = item.pm10Value;
     const dustProgressWidth = dustValue / 2;
@@ -76,7 +75,27 @@ const dustStatusInit = () => {
   updateDustTimelineView(timelineList);
 };
 
-DUST_ELEMENT.timeline.addEventListener('touchstart', saveStartingPoint);
-DUST_ELEMENT.timeline.addEventListener('touchmove', e => calcIndexTouchMove(e, DUST_TIMELINE_LENGTH));
+const initStatus = () => {
+  if (navigator.geolocation) return navigator.geolocation.getCurrentPosition(showPosition);
+  defualtPosition();
+};
+const showPosition = async position => {
+  const lati = position.coords.latitude;
+  const long = position.coords.longitude;
+  await $GET(`${DUST_API_URL.status}?latitude=${lati}&longitude=${long}`).then(data => {
+    localStorage.setItem('DUST_STATUS6', JSON.stringify(data));
+  });
+  initRender();
+};
+const defualtPosition = async () => {
+  await $GET(`${DUST_API_URL.status}?latitude=37.491076&longitude=127.033353`).then(data => {
+    localStorage.setItem('DUST_STATUS5', JSON.stringify(data));
+  });
+  initRender();
+};
 
-export { dustStatusInit };
+
+DUST_ELEMENT.timeline.addEventListener('touchstart', saveStartingPoint);
+DUST_ELEMENT.timeline.addEventListener('touchmove', e => calcIndexTouchMove(e, DUST_DATA.timelineLength));
+
+export { initStatus };
